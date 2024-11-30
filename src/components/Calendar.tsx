@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 
 interface Note {
@@ -18,6 +18,19 @@ const Calendar: React.FC = () => {
     const daysInMonth = currentDate.daysInMonth();
     const firstDayOfMonth = currentDate.startOf("month").day();
 
+    useEffect(() => {
+        const storedNotes = localStorage.getItem("calendarNotes");
+        if (storedNotes) {
+            setNotes(JSON.parse(storedNotes));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (notes.length > 0) {
+            localStorage.setItem("calendarNotes", JSON.stringify(notes));
+        }
+    }, [notes]);
+
     const addNote = () => {
         if (newNote.trim() === "") return;
 
@@ -27,7 +40,8 @@ const Calendar: React.FC = () => {
             return;
         }
 
-        setNotes([...notes, { date: selectedDate, title: newNote }]);
+        const updatedNotes = [...notes, { date: selectedDate, title: newNote }];
+        setNotes(updatedNotes);
         setNewNote("");
         setIsModalOpen(false);
     };
